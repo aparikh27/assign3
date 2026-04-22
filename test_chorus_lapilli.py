@@ -154,6 +154,61 @@ class TestChorusLapilli(unittest.TestCase):
         self.assertTileIs(tiles[0], self.SYMBOL_BLANK)
         tiles[0].click()
         self.assertTileIs(tiles[0], self.SYMBOL_X)
+    def test_moving_piece(self):
+        '''Check if pieces can be moved after all pieces are placed.'''
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        for i in range(6):
+            tiles[i].click()
+        self.assertTileIs(tiles[0], self.SYMBOL_X)
+        self.assertTileIs(tiles[1], self.SYMBOL_X)
+        self.assertTileIs(tiles[2], self.SYMBOL_X)
+        self.assertTileIs(tiles[3], self.SYMBOL_O)
+        self.assertTileIs(tiles[4], self.SYMBOL_O)
+        self.assertTileIs(tiles[5], self.SYMBOL_O)
+
+        # move piece from 0 to 1
+        tiles[0].click()
+        tiles[1].click()
+        self.assertTileIs(tiles[0], self.SYMBOL_BLANK)
+        self.assertTileIs(tiles[1], self.SYMBOL_X)
+    def test_invalid_move(self):
+        '''Check if invalid moves are prevented.'''
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        for i in range(6):
+            tiles[i].click()
+        self.assertTileIs(tiles[0], self.SYMBOL_X)
+        self.assertTileIs(tiles[1], self.SYMBOL_X)
+        self.assertTileIs(tiles[2], self.SYMBOL_X)
+        self.assertTileIs(tiles[3], self.SYMBOL_O)
+        self.assertTileIs(tiles[4], self.SYMBOL_O)
+        self.assertTileIs(tiles[5], self.SYMBOL_O)
+
+        # try to move piece from 0 to 2 (not adjacent)
+        tiles[0].click()
+        tiles[2].click()
+        self.assertTileIs(tiles[0], self.SYMBOL_X)
+        self.assertTileIs(tiles[2], self.SYMBOL_X)
+        
+    def winning_conditions(self):
+        '''Check if winning conditions are detected.'''
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        for i in range(6):
+            tiles[i].click()
+        self.assertTileIs(tiles[0], self.SYMBOL_X)
+        self.assertTileIs(tiles[1], self.SYMBOL_X)
+        self.assertTileIs(tiles[2], self.SYMBOL_X)
+        self.assertTileIs(tiles[3], self.SYMBOL_O)
+        self.assertTileIs(tiles[4], self.SYMBOL_O)
+        self.assertTileIs(tiles[5], self.SYMBOL_O)
+
+        # move piece from 0 to 1
+        tiles[0].click()
+        tiles[1].click()
+        # check if X wins
+        status = self.driver.find_element(By.CLASS_NAME, 'status')
+        if 'X wins!' not in status.text:
+            raise AssertionError('X should have won but status is: 'f'\'{status.text}\'')
+
 
 
 # ================= [DO NOT MAKE ANY CHANGES BELOW THIS LINE] =================
