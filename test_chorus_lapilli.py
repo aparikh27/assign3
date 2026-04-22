@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from turtle import setup
 import unittest
 import os
 import sys
@@ -155,59 +156,47 @@ class TestChorusLapilli(unittest.TestCase):
         tiles[0].click()
         self.assertTileIs(tiles[0], self.SYMBOL_X)
     def test_moving_piece(self):
-        '''Check if pieces can be moved after all pieces are placed.'''
+        '''Check a piece can be moved after each player has placed their 3 pieces.'''
         tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
         for i in range(6):
             tiles[i].click()
         self.assertTileIs(tiles[0], self.SYMBOL_X)
-        self.assertTileIs(tiles[1], self.SYMBOL_X)
+        self.assertTileIs(tiles[1], self.SYMBOL_O)
         self.assertTileIs(tiles[2], self.SYMBOL_X)
         self.assertTileIs(tiles[3], self.SYMBOL_O)
-        self.assertTileIs(tiles[4], self.SYMBOL_O)
+        self.assertTileIs(tiles[4], self.SYMBOL_X)
         self.assertTileIs(tiles[5], self.SYMBOL_O)
 
         # move piece from 0 to 1
-        tiles[0].click()
-        tiles[1].click()
-        self.assertTileIs(tiles[0], self.SYMBOL_BLANK)
-        self.assertTileIs(tiles[1], self.SYMBOL_X)
+        tiles[4].click()
+        tiles[7].click()
+        self.assertTileIs(tiles[4], self.SYMBOL_BLANK)
+        self.assertTileIs(tiles[7], self.SYMBOL_X)
+
     def test_invalid_move(self):
         '''Check if invalid moves are prevented.'''
         tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
         for i in range(6):
             tiles[i].click()
-        self.assertTileIs(tiles[0], self.SYMBOL_X)
-        self.assertTileIs(tiles[1], self.SYMBOL_X)
-        self.assertTileIs(tiles[2], self.SYMBOL_X)
-        self.assertTileIs(tiles[3], self.SYMBOL_O)
-        self.assertTileIs(tiles[4], self.SYMBOL_O)
-        self.assertTileIs(tiles[5], self.SYMBOL_O)
 
-        # try to move piece from 0 to 2 (not adjacent)
+        # try to move piece from 0 to 1 (already occupied)
         tiles[0].click()
-        tiles[2].click()
+        tiles[1].click()
         self.assertTileIs(tiles[0], self.SYMBOL_X)
-        self.assertTileIs(tiles[2], self.SYMBOL_X)
-        
+        self.assertTileIs(tiles[1], self.SYMBOL_O)
+
     def winning_conditions(self):
         '''Check if winning conditions are detected.'''
         tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
-        for i in range(6):
+        setup = [0, 1, 8, 3, 6, 5]
+        for i in setup:
             tiles[i].click()
-        self.assertTileIs(tiles[0], self.SYMBOL_X)
-        self.assertTileIs(tiles[1], self.SYMBOL_X)
-        self.assertTileIs(tiles[2], self.SYMBOL_X)
-        self.assertTileIs(tiles[3], self.SYMBOL_O)
-        self.assertTileIs(tiles[4], self.SYMBOL_O)
-        self.assertTileIs(tiles[5], self.SYMBOL_O)
 
-        # move piece from 0 to 1
-        tiles[0].click()
-        tiles[1].click()
-        # check if X wins
+        tiles[8].click() 
+        tiles[4].click() 
+    
         status = self.driver.find_element(By.CLASS_NAME, 'status')
-        if 'X wins!' not in status.text:
-            raise AssertionError('X should have won but status is: 'f'\'{status.text}\'')
+        self.assertIn('Winner: X', status.text) 
 
 
 
