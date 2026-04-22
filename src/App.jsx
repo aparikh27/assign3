@@ -8,19 +8,60 @@ function Square({ value, onSquareClick }) {
   );
 }
 
-function Board({ xIsNext, squares, onPlay }) {
+function isAdjacent(sourceIdx, targetIdx) {
+  const sourceRow = Math.floor(sourceIdx / 3);
+  const sourceCol = sourceIdx % 3;
+  const targetRow = Math.floor(targetIdx / 3);
+  const targetCol = targetIdx % 3;
+
+  const rowDiff = Math.abs(sourceRow - targetRow);
+  const colDiff = Math.abs(sourceCol - targetCol);
+
+  // Return if squares are adjacent (less than or equal to 1 row and 1 column apart)
+  return rowDiff <= 1 && colDiff <= 1;
+}
+
+function Board({ xIsNext, squares, onPlay, reachedMaxMoves, selectedSquare}) {
   function handleClick(i) {
-    if (calculateWinner(squares) || squares[i]) {
+    if (calculateWinner(squares)) {
       return;
     }
+
     const nextSquares = squares.slice();
-    if (xIsNext) {
-      nextSquares[i] = 'X';
-    } else {
-      nextSquares[i] = 'O';
+
+    if (!reachedMaxMoves) {
+      if (squares[i]) return; // first phase of the game, players can fill squares as normal
+      if (xIsNext) {
+        nextSquares[i] = 'X';
+      } else {
+        nextSquares[i] = 'O';
+      }
+      onPlay(nextSquares, {place: null, player: null}, true); // update the board and increment the move
+
+    } else { // second phase of the game 
+
+      if (selectedSquare.place === null) { // if no square is currently selected
+        if (squares[i] === null || squares[i] !== (xIsNext ? 'X' : 'O')) {
+          console.log("Invalid selection. Please select a square that contains your piece.");
+        } else {
+          onPlay(nextSquares, {place: i, player: xIsNext ? 'X' : 'O'}, false); // set the selected square without incrementing the move
+        }
+
+      } else { // if a square is already selected
+        if (squares[i] === null  && isAdjacent(selectedSquare.place, i)) { // only allow moving to an empty square
+            
+          nextSquares[i] = selectedSquare.player; // move the piece to the new square
+          nextSquares[selectedSquare.place] = null; // clear the old square
+          onPlay(nextSquares, {place: null, player: null}, true); // update the board and increment the move
+
+        } else if (squares[i] === selectedSquare.player) { 
+          onPlay(nextSquares, {place: i, player: xIsNext ? 'X' : 'O'}, false); // allow the player to change their selection to another one of their pieces
+        } else {  
+          console.log("Invalid move. You can only move to an adjacent empty square.");
+        }
     }
-    onPlay(nextSquares);
   }
+}
 
   const winner = calculateWinner(squares);
   let status;
@@ -52,16 +93,22 @@ function Board({ xIsNext, squares, onPlay }) {
   );
 }
 
+
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
-  const xIsNext = currentMove % 2 === 0;
+  const [selectedSquare, setSelectedSquare] = useState({place: null, player: null}); 
+  const xIsNext = currentMove % 2 === 0; 
+  const reachedMaxMoves = history[currentMove].filter(square => square !== null).length === 6;
   const currentSquares = history[currentMove];
 
-  function handlePlay(nextSquares) {
-    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
-    setHistory(nextHistory);
-    setCurrentMove(nextHistory.length - 1);
+  function handlePlay(nextSquares, selectedSquare, incrementMove) {
+    if (incrementMove) {
+      const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+      setHistory(nextHistory);
+      setCurrentMove(nextHistory.length - 1);
+    }
+    setSelectedSquare(selectedSquare);
   }
 
   function jumpTo(nextMove) {
@@ -85,7 +132,10 @@ export default function Game() {
   return (
     <div className="game">
       <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <Board xIsNext={xIsNext} squares={currentSquares} 
+        onPlay={handlePlay} 
+        reachedMaxMoves={reachedMaxMoves} 
+        selectedSquare={selectedSquare} />
       </div>
       <div className="game-info">
         <ol>{moves}</ol>
@@ -113,3 +163,4 @@ function calculateWinner(squares) {
   }
   return null;
 }
+
