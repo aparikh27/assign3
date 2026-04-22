@@ -1,0 +1,13 @@
+1. Create a new npm-react-app using vite. 
+2. Create a new Default Export function called Square which displays a hard-coded value.
+3. Create a new Default Export Function called Board which houses a 3x3 grid of Square components. 
+4. Change the Square component to accept a value and onSquareClick function as props. The value is displayed to the user and the onSquareClick function is run once the square is clicked. 
+5. Lift the square state up to live inside the Board function. This allowed the Board to keep track of the array state and change the values of the board. The board was initially filled with “null” values and then changed to an “x” once the user clicks. 
+6. To create the functionality of two users, created a boolean flag that alternates per move. On true, the click results in an X while a false results in an O. 
+7. Create a calculateWinner function that accepts the square function as an argument. Calculates if there are 3 Xs or Os in a row and displays that on the Board.
+8. Test to see if the game is playable and that winning is calculated correctly. 
+9. To create a history component, lift the state of the Board up into a new Default Export function called Game which will store the entire history. 
+10. Move the useState logic (turn order, history, current square) from the Board to the Game function.
+11. Create a handlePlay function inside the Game component that is called by the Board to update the game. 
+12. Store each move array in the history array, create a new variable named currentSquares that displays the history array at the position of “current move”
+13. Use a map function on the history array to create buttons that allow the user to jump back to the chosen move. 

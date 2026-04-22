@@ -14,11 +14,8 @@ function isAdjacent(sourceIdx, targetIdx) { // function to find if the target sq
   const targetRow = Math.floor(targetIdx / 3);
   const targetCol = targetIdx % 3;
 
-  const rowDiff = Math.abs(sourceRow - targetRow);
-  const colDiff = Math.abs(sourceCol - targetCol);
-
   // Return if squares are adjacent (less than or equal to 1 row and 1 column apart)
-  return rowDiff <= 1 && colDiff <= 1;
+  return Math.abs(sourceRow - targetRow) <= 1 && Math.abs(sourceCol - targetCol) <= 1;
 }
 
 function Board({ xIsNext, squares, onPlay, reachedMaxMoves, selectedSquare}) {

@@ -1,0 +1,14 @@
+1. Build upon the original source code from the tic-tac-toe game. 
+2. Declare a variable to track if players have laid down their 3 pieces each
+3. Split handleClick logic into first phase (laying down pieces) and second phase (moving their pieces).
+4. Change the handlePlay function to accept the current selected square and a boolean flag indicating whether or not to record a move. 
+5. Keep original phase 1 logic, and return a selected square with null values and true boolean flag. 
+6. Split the second phase into two parts: selecting a piece to move and laying it down. 
+7. First, implement the logic to select a piece on the first click. When selecting a piece, ensure it belongs to the current player. If the selected piece is incorrect, flag an error and do not return anything. Otherwise, return the select square with the index of the square and the player it belongs to. Do not increment a move yet (as the piece has not been laid down). 
+8. Record the user’s second click as where to lay down the piece. 
+9. First, declare a function that returns a boolean flag whether the target place is a valid place to lay down the user’s piece (is empty and is adjacent). 
+10. If it is a valid move, move the piece from the source to target index. Return a null selected square and increment move. It is now the next player’s turn. 
+11. If it is an invalid move, flag an error and allow the user to keep trying to move to a valid place. 
+12. Keep the calculateWinner function.
+13. Test to see if players are able to move pieces. 
+14. Within the second part of the second phase in the handleClick logic, check to see whether the current user had a piece on the center square. If so, force them to evict that square (unless they can win on that move). 
